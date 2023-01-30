@@ -3,7 +3,38 @@
     {
       "username": "Jika",
       "password": "pass123",
-      "favorites": [],
+      "favorites": [
+        {
+          "title": "My story",
+          "content": "It begins in 1995",
+          "likes": 1,
+          "author": {
+            "id": 1,
+            "name": "Jika"
+          },
+          "id": 1
+        },
+        {
+          "title": "My friends",
+          "content": "They are hackers",
+          "likes": 1,
+          "author": {
+            "id": 1,
+            "name": "Jika"
+          },
+          "id": 2
+        },
+        {
+          "title": "My wife",
+          "content": "Her name is Jika",
+          "likes": 1,
+          "author": {
+            "id": 2,
+            "name": "Erlan"
+          },
+          "id": 3
+        }
+      ],
       "id": 1
     },
     {
@@ -17,7 +48,7 @@
     {
       "title": "My story",
       "content": "It begins in 1995",
-      "likes": 0,
+      "likes": 1,
       "author": {
         "id": 1,
         "name": "Jika"
@@ -27,7 +58,7 @@
     {
       "title": "My friends",
       "content": "They are hackers",
-      "likes": 0,
+      "likes": 1,
       "author": {
         "id": 1,
         "name": "Jika"
@@ -37,7 +68,7 @@
     {
       "title": "My wife",
       "content": "Her name is Jika",
-      "likes": 0,
+      "likes": 1,
       "author": {
         "id": 2,
         "name": "Erlan"
