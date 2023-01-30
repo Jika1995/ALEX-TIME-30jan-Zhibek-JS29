@@ -1,0 +1,38 @@
+{
+  "users": [
+    {
+      "username": "Jika",
+      "password": "pass123",
+      "favorites": [],
+      "id": 1
+    },
+    {
+      "username": "Erlan",
+      "password": "pass12",
+      "favorites": [],
+      "id": 2
+    }
+  ],
+  "posts": [
+    {
+      "title": "My story",
+      "content": "It begins in 1995",
+      "likes": 0,
+      "author": {
+        "id": 1,
+        "name": "Jika"
+      },
+      "id": 1
+    },
+    {
+      "title": "My wife",
+      "content": "Her name is Zhibek",
+      "likes": 0,
+      "author": {
+        "id": 2,
+        "name": "Erlan"
+      },
+      "id": 2
+    }
+  ]
+}
