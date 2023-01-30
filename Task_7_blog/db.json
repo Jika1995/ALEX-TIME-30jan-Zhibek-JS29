@@ -25,14 +25,24 @@
       "id": 1
     },
     {
+      "title": "My friends",
+      "content": "They are hackers",
+      "likes": 0,
+      "author": {
+        "id": 1,
+        "name": "Jika"
+      },
+      "id": 2
+    },
+    {
       "title": "My wife",
-      "content": "Her name is Zhibek",
+      "content": "Her name is Jika",
       "likes": 0,
       "author": {
         "id": 2,
         "name": "Erlan"
       },
-      "id": 2
+      "id": 3
     }
   ]
 }

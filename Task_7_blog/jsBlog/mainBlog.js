@@ -178,9 +178,18 @@ async function login () {
 
 //logout logic 
 logoutBtn.addEventListener('click', ()=> {
+    let user = localStorage.getItem('user');
+
+    fetch(`${USERS_API}/${user.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(user),
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'}
+    });
+
     localStorage.removeItem('user');
     checkLoginLogoutStatus();
-    render()
+    render();
 });
 
 //CRUD 
@@ -189,11 +198,8 @@ logoutBtn.addEventListener('click', ()=> {
 function checkUserForCreatePost () {
     let user = JSON.parse(localStorage.getItem('user'));
 
-    if(!user) {
-        return false
-    } else {
-        return true
-    }
+    if(user) return user.id;
+    return false
 }; 
 
 function showCreatePostPanel () {
@@ -258,32 +264,15 @@ addPostBtn.addEventListener('click', createPost);
 
 let postsBlock = document.querySelector('#posts-list');
 
-async function checkAuthorPost () {
-
-    let posts = await getPostsData();
-    let user = JSON.parse(localStorage.getItem('user'));
-    if(!user) return
-
-    console.log(user);
-
-    let postObj = posts.find(item => item.author.id == user.id);
-
-    console.log(postObj);
-
-    if(postObj) {
-        return true
-    } else {
-        return false
-    }
-
-}
+let like = false;
 
 async function render () {
 
     postsBlock.innerHTML = '';
 
     let posts = await getPostsData();
-    console.log(posts);
+    // console.log(posts);
+    if (posts.length === 0) return;
 
     posts.forEach(item => {
         postsBlock.innerHTML += `
@@ -296,30 +285,32 @@ async function render () {
                         <p class="likes-num">${item.likes}</p>
                         <img src="https://cdn-icons-png.flaticon.com/512/1029/1029183.png" width="30" height="30">
                     </div>
-                    <button class="btn btn-primary like-btn" id="like-${item.id}">Like</button>
-                    ${checkAuthorPost() ?  //тернарный если true есть ли у него доступ тогда покажи ему эти кнопки
+                    ${checkUserForCreatePost() == item.author.id? 
                     `<a href="#" class="btn btn-dark btn-edit" id="edit-${item.id}">EDIT</a>
                     <a href="#" class="btn btn-danger btn-delete" id=del-${item.id}>DELETE</a>
                     `
                     :
                     '' 
                     }
+                    ${checkUserForCreatePost() ? 
+                        `<button class="btn btn-primary like-btn" id="like-${item.id}">Like</button>
+                        <button class="btn btn-primary dislike-btn" id="dislike-${item.id}">DisLike</button>
+                        `
+                        :
+                        '' 
+                    }
             </div>
         </div>
         `
     });
 
-    if (posts.length === 0) return;
-
     addDeleteEvent();
     addEditEvent();
-    addLikeEvent()
-};
+    addLikeEvent();
+    addDislikeEvent();
+    // checkLikeDislike();
 
-// ${checkUserForCreatePost() ? 
-//     `
-//     <button class="btn btn-primary like-btn">Like</button>
-//     `}
+};
 
 render()
 
@@ -332,7 +323,7 @@ function addDeleteEvent () {
 
 async function deletePost (e) {
 
-    let postId = e.target.split('-')[1];
+    let postId = e.target.id.split('-')[1];
 
     await fetch (`${POSTS_API}/${postId}`, {
         method: 'DELETE'
@@ -387,7 +378,7 @@ async function saveChanges(e) {
     };
 
     await fetch (`${POSTS_API}/${e.target.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         body: JSON.stringify(updatedPostObj),
         headers: {
             'Content-Type': 'application/json;charset=utf-8'}
@@ -407,8 +398,15 @@ async function saveChanges(e) {
 //like
 
 function addLikeEvent () {
-    likeBtns = document.querySelectorAll('.like-btn');
+    let likeBtns = document.querySelectorAll('.like-btn');
     likeBtns.forEach(item => item.addEventListener('click', putLike))
+    likeBtns.forEach(item => item.addEventListener('click', checkLikeDislike))
+}
+
+function addDislikeEvent () {
+    let dislikeBtns = document.querySelectorAll('.dislike-btn');
+    dislikeBtns.forEach(item => item.addEventListener('click', putDislike))
+    dislikeBtns.forEach(item => item.addEventListener('click', checkLikeDislike))
 }
 
 async function putLike (e) {
@@ -417,35 +415,16 @@ async function putLike (e) {
     let postId = e.target.id.split('-')[1];
 
     let posts = await getPostsData();
-
     let postObj = posts.find(item => item.id == postId);
+    console.log(postObj);
 
     function checkIfLiked (favorites, postId) {
         let likedPost = favorites.find(item => item.id == postId) //true or false
         return likedPost
     }
     
-    if (checkIfLiked(user.favorites, postId)) {
-        e.target.innerText = 'Dislike';
-
-        postObj.likes -= 1
-
-        await fetch (`${POSTS_API}/${postId}`, {
-            method: 'PATCH',
-            body: JSON.stringify(postObj),
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'}
-        });
-
-        let favorites = user.favorites.filter(item => item.id != postId);
-        user.favorites = favorites
-        localStorage.setItem('user', JSON.stringify(user));
-
-        return;
-    } 
-
     if(!checkIfLiked(user.favorites, postId)) {
-
+        
         postObj.likes += 1
 
         user.favorites.push(postObj);
@@ -457,9 +436,110 @@ async function putLike (e) {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'}
         });
-    }
-    render()
 
+        await fetch(`${USERS_API}/${user.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({favorites: user.favorites}),
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'}
+        });
+    };
+
+    user.favorites.push(postObj);
+    render();
+
+    return like = true
+
+};
+
+async function putDislike (e) {
+
+    let user = JSON.parse(localStorage.getItem('user'));
+    let postId = e.target.id.split('-')[1];
+
+    let posts = await getPostsData();
+    let postObj = posts.find(item => item.id == postId);
+    console.log(postObj);
+
+    function checkIfLiked (favorites, postId) {
+        let likedPost = favorites.find(item => item.id == postId) //true or false
+        return likedPost
+    };
+
+    if(postObj.likes === 0) return
+
+    if (checkIfLiked(user.favorites, postId)) {
+        
+        postObj.likes -= 1
+
+        await fetch (`${POSTS_API}/${postId}`, {
+            method: 'PATCH',
+            body: JSON.stringify(postObj),
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'}
+        });
+
+        let favorites = user.favorites.filter(item => item.id != postId);
+        user.favorites = favorites;
+
+        await fetch(`${USERS_API}/${user.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({favorites: user.favorites}),
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'}
+        });
+        
+        localStorage.setItem('user', JSON.stringify(user));
+
+    } 
+    render();
+    return like = false
+}
+
+function checkLikeDislike (e) {
+
+    console.log(e.target);
+
+    if(like) {
+        e.target.setAttribute('style', 'display: block');
+    } 
+    if(!like) {
+        e.target.setAttribute('style', 'display: none')
+    }
+
+};
+
+
+
+// console.log(e.target.id.split('-')[1]);
+// if(like) {
+//     dislikeBtn.forEach(item => item.setAttribute('style', 'display: block'));
+//     likeBtns.forEach(item => item.setAttribute('style', 'display: none'));
+// } else {
+//     dislikeBtns.forEach(item => item.setAttribute('style', 'display: none'));
+//     likeBtns.forEach(item => item.setAttribute('style', 'display: block'));
+// };
+
+
+async function checkAuthorPost () {
+
+    let posts = await getPostsData();
+    let user = JSON.parse(localStorage.getItem('user'));
+    if(!user) return
+
+    // console.log(user);
+    // console.log(posts);
+
+    let postObj = posts.find(item => item.author.id === user.id && item.author.name === user.username);
+
+    // console.log(postObj);
+
+    if(postObj) {
+        return true
+    } else {
+        console.log('OK');
+        return false
+    }
 }
 
 //2. Полный CRUD на посты, каждый зарегистрированный и авторизованный пользователь должен получить доступ к созданию, редактированию, удалению ТОЛЬКО СВОИХ постов, вид объекта поста:
