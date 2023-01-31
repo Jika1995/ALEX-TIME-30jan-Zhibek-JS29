@@ -310,64 +310,62 @@ async function render () {
     addDislikeEvent();
     // checkLikeDislike();
 
-    let user = JSON.parse(localStorage.getItem('user'));
-    if(!user) return
-    console.log(user.favorites);
+    // let user = JSON.parse(localStorage.getItem('user'));
+    // if(!user) return
+    // // console.log(user.favorites);
 
-    let dislikeBtns = document.querySelectorAll('.dislike-btn');
-    console.log(dislikeBtns);
-    let likeBtns = document.querySelectorAll('.like-btn');
-    console.log(likeBtns);
-    
-    if(user.favorites) {
+    // let dislikeBtns = document.querySelectorAll('.dislike-btn');
+    // // console.log(dislikeBtns);
+    // let likeBtns = document.querySelectorAll('.like-btn');
+    // // console.log(likeBtns);
+    // let newArrDislike = [];
+    // let newArrLike = [];
 
-    dislikeBtns.forEach(item => {
-        let likedPost = item.id.split('-')[1];
-        // console.log(likedPost);
-        user.favorites.forEach(i => {
-            if(i.id == likedPost) {
-                console.log('OK');
-                item.setAttribute('style', 'display: block !important');
-                likeBtns.forEach(item => item.setAttribute('style', 'display: none !important'));
-            } else {
-                item.setAttribute('style', 'display: none !important');
-                likeBtns.forEach(item => item.setAttribute('style', 'display: block !important'));
-            }
-        })
-    })
-    }
+    // if(user.favorites) {
+    //     let newArrdisLikeBtns = [...dislikeBtns];
+    //     newArrdisLikeBtns.map(function(item){
+    //         user.favorites.forEach(i => {
+    //             if(item.id.split('-')[1] == i.id) {
+    //                 console.log(item)
+    //                 newArrDislike.push(item)
+    //                 // newArrLike.forEach(item => {
+    //                 //     item.setAttribute('style', 'display: none !important');
+    //                 // });
+    //             }
+    //         })
+    //     })
+    //     // console.log(newArr)
+    //     newArrdisLikeBtns.forEach(item => {
+    //         item.setAttribute('style', 'display: block !important');
+    //     });
+
+    //     let newArrLikeBtns = [...likeBtns];
+    //     newArrLikeBtns.map(function(item){
+    //         user.favorites.forEach(i => {
+    //             if(item.id.split('-')[1] == i.id) {
+    //                 newArrLike.push(item)
+                    
+    //                 // console.log(item);
+    //                 // newArrDislike.forEach(item => {
+    //                 //     item.setAttribute('style', 'display: block !important');
+    //                 // }); 
+    //             }
+    //         })
+    //     })
+    //     console.log(newArrLike)
+    //     newArrLike.forEach(item => {
+    //         item.setAttribute('style', 'display: none !important');
+    //     });
+    // } 
     
 };
 
-// function checkLikedOrDisliked (user, postId){
-    // let user = JSON.parse(localStorage.getItem('user'));
-
-    // let dislikeBtns = document.querySelectorAll('.dislike-btn');
-    // let likeBtns = document.querySelectorAll('.like-btn');
-
-    // dislikeBtns.forEach(item => {
-    //     let likedPostId = item.id.split('-')[1];
-
-    //     if(user.favorites.some(item => item.id === likedPostId)) {
-    //         dislikeBtns.forEach(item => item.setAttribute('style', 'display: none !important'));
-    //         likeBtns.forEach(item => item.setAttribute('style', 'display: block !important'));
-    //     } else {
-    //         dislikeBtns.forEach(item => item.setAttribute('style', 'display: block !important'));
-    //         likeBtns.forEach(item => item.setAttribute('style', 'display: none !important'));
-    //     };
-    // })
-
-    // likeBtns.forEach(item => {
-    //     let dislikedPostId = item.id.split('-')[1];
-    //     if(user.favorites.some(item => item.id === dislikedPostId)) {
-    //         dislikeBtns.forEach(item => item.setAttribute('style', 'display: block'));
-    //         likeBtns.forEach(item => item.setAttribute('style', 'display: none'));
-    //     } else {
-    //         dislikeBtns.forEach(item => item.setAttribute('style', 'display: none'));
-    //         likeBtns.forEach(item => item.setAttribute('style', 'display: block'));
-    //     };
-    // })
-
+// !!!${checkUserForCreatePost() ? 
+// `<button class="btn btn-primary like-btn" id="like-${item.id}">Like</button>
+// <button class="btn btn-primary dislike-btn" id="dislike-${item.id}">DisLike</button>
+// `
+// :
+// '' 
 // }
 
 render()
@@ -458,23 +456,19 @@ async function saveChanges(e) {
 function addLikeEvent () {
     let likeBtns = document.querySelectorAll('.like-btn');
     likeBtns.forEach(item => item.addEventListener('click', putLike))
-    // likeBtns.forEach(item => item.addEventListener('click', checkLikeDislike))
+    likeBtns.forEach(item => item.addEventListener('click', checkLIKES))
 }
 
 function addDislikeEvent () {
     let dislikeBtns = document.querySelectorAll('.dislike-btn');
     dislikeBtns.forEach(item => item.addEventListener('click', putDislike))
-    // dislikeBtns.forEach(item => item.addEventListener('click', checkLikeDislike))
+    dislikeBtns.forEach(item => item.addEventListener('click', checkdisLIKES))
 }
 
 async function putLike (e) {
 
     let user = JSON.parse(localStorage.getItem('user'));
     let postId = e.target.id.split('-')[1];
-
-    if(user.favorites.some(item => item.id === postId)) {
-
-    };
 
     let posts = await getPostsData();
     let postObj = posts.find(item => item.id == postId);
@@ -559,68 +553,67 @@ async function putDislike (e) {
     return like = false
 }
 
-// function checkLikeDislike (e) {
-
-//     if(like) {
-//         e.target.setAttribute('style', 'display: block !important');
-//     } 
-//     if(!like) {
-//         e.target.setAttribute('style', 'display: none !important')
-//     }
-// };
-
-//     let dislikeBtns = document.querySelectorAll('.dislike-btn')
-//     let likeBtns = document.querySelectorAll('.like-btn')
-
-//    if(like) {
-//         dislikeBtns.forEach(item => item.setAttribute('style', 'display: block'));
-//         likeBtns.forEach(item => item.setAttribute('style', 'display: none'));
-//     } else {
-//         dislikeBtns.forEach(item => item.setAttribute('style', 'display: none'));
-//         likeBtns.forEach(item => item.setAttribute('style', 'display: block'));
-//     };
-
-// if(like) {
-//     let likeBtn = document.querySelectorAll('.like-btn');
-//     let dislikeBtn = document.querySelectorAll('.dislike-btn');
-//     likeBtn.forEach(item => item.setAttribute('style', 'display: none'));
-//     dislikeBtn.forEach(item => item.setAttribute('style', 'display: block'))
-// } else {
-//     let likeBtn = document.querySelectorAll('.like-btn');
-//     let dislikeBtn = document.querySelectorAll('.dislike-btn');
-//     likeBtn.forEach(item => item.setAttribute('style', 'display: block'));
-//     dislikeBtn.forEach(item => item.setAttribute('style', 'display: none'))
-// }
-// console.log(e.target.id.split('-')[1]);
-// if(like) {
-//     dislikeBtn.forEach(item => item.setAttribute('style', 'display: block'));
-//     likeBtns.forEach(item => item.setAttribute('style', 'display: none'));
-// } else {
-//     dislikeBtns.forEach(item => item.setAttribute('style', 'display: none'));
-//     likeBtns.forEach(item => item.setAttribute('style', 'display: block'));
-// };
-
-
-async function checkAuthorPost () {
-
-    let posts = await getPostsData();
+function checkLIKES (e) {
     let user = JSON.parse(localStorage.getItem('user'));
     if(!user) return
 
-    // console.log(user);
-    // console.log(posts);
+    let likeBtnId = e.target.id.split('-')[1];
+    let postObj = user.favorites.find(item => item.id == likeBtnId)
 
-    let postObj = posts.find(item => item.author.id === user.id && item.author.name === user.username);
-
-    // console.log(postObj);
-
-    if(postObj) {
-        return true
+    if (postObj){
+        e.target.setAttribute('style', 'display: none !important')
     } else {
-        console.log('OK');
-        return false
+        e.target.setAttribute('style', 'display: block !important')
     }
+
+    return postObj.id;
+
+    // if (user.favorites.some(item => item.id == postId)) {
+    //     e.target.setAttribute('style', 'display: block !important')
+    // } else {
+    //     e.target.setAttribute('style', 'display: none !important')
+    // }
+
+    
 }
+
+function checkdisLIKES (e) {
+    
+        let user = JSON.parse(localStorage.getItem('user'));
+        if(!user) return
+    
+        let likeBtnId = e.target.id.split('-')[1];
+        let postObj = user.favorites.find(item => item.id == likeBtnId)
+    
+        console.log(postObj.id);
+        if (postObj){
+            e.target.setAttribute('style', 'display: block !important')
+        } else {
+            e.target.setAttribute('style', 'display: none !important')
+        }
+        
+        return postObj.id;
+}
+// async function checkAuthorPost () {
+
+//     let posts = await getPostsData();
+//     let user = JSON.parse(localStorage.getItem('user'));
+//     if(!user) return
+
+//     // console.log(user);
+//     // console.log(posts);
+
+//     let postObj = posts.find(item => item.author.id === user.id && item.author.name === user.username);
+
+//     // console.log(postObj);
+
+//     if(postObj) {
+//         return true
+//     } else {
+//         console.log('OK');
+//         return false
+//     }
+// }
 
 //2. Полный CRUD на посты, каждый зарегистрированный и авторизованный пользователь должен получить доступ к созданию, редактированию, удалению ТОЛЬКО СВОИХ постов, вид объекта поста:
 // admin -- author ориентир на ID
@@ -662,4 +655,100 @@ async function checkAuthorPost () {
 
 //ВАЖНО: если пользователь ставик лайк посту, то для него исчезает кнопка лайк и появляется кнопка дизлайк(для данного поста), но если зайти под другим аккаунтом, который еще не ставил лайк, то кнопка лайк снова должна появиться
 
-//
+//ЧЕРНОВИК 
+
+    //     let newArr = []
+    //     newArr = newArrDislikeBtns.filter(item => {
+    //         user.favorites.forEach(i => {
+    //             console.log(item.id.split('-')[1])
+    //             console.log(i.id);
+    //             item.id.split('-')[1] == i.id
+    //             console.log(newArr)
+    //     })
+    // })
+    // dislikeBtns.forEach(item => {
+    //     let likedPost = item.id.split('-')[1];
+    //     // console.log(likedPost);
+    //     user.favorites.forEach(i => {
+    //         if(i.id == likedPost) {
+    //             console.log('OK');
+    //             item.setAttribute('style', 'display: block !important');
+    //             likeBtns.forEach(item => item.setAttribute('style', 'display: none !important'));
+    //         } else {
+    //             item.setAttribute('style', 'display: none !important');
+    //             likeBtns.forEach(item => item.setAttribute('style', 'display: block !important'));
+    //         }
+    //     })
+    // })
+
+// function checkLikedOrDisliked (user, postId){
+    // let user = JSON.parse(localStorage.getItem('user'));
+
+    // let dislikeBtns = document.querySelectorAll('.dislike-btn');
+    // let likeBtns = document.querySelectorAll('.like-btn');
+
+    // dislikeBtns.forEach(item => {
+    //     let likedPostId = item.id.split('-')[1];
+
+    //     if(user.favorites.some(item => item.id === likedPostId)) {
+    //         dislikeBtns.forEach(item => item.setAttribute('style', 'display: none !important'));
+    //         likeBtns.forEach(item => item.setAttribute('style', 'display: block !important'));
+    //     } else {
+    //         dislikeBtns.forEach(item => item.setAttribute('style', 'display: block !important'));
+    //         likeBtns.forEach(item => item.setAttribute('style', 'display: none !important'));
+    //     };
+    // })
+
+    // likeBtns.forEach(item => {
+    //     let dislikedPostId = item.id.split('-')[1];
+    //     if(user.favorites.some(item => item.id === dislikedPostId)) {
+    //         dislikeBtns.forEach(item => item.setAttribute('style', 'display: block'));
+    //         likeBtns.forEach(item => item.setAttribute('style', 'display: none'));
+    //     } else {
+    //         dislikeBtns.forEach(item => item.setAttribute('style', 'display: none'));
+    //         likeBtns.forEach(item => item.setAttribute('style', 'display: block'));
+    //     };
+    // })
+
+// }
+
+// function checkLikeDislike (e) {
+
+//     if(like) {
+//         e.target.setAttribute('style', 'display: block !important');
+//     } 
+//     if(!like) {
+//         e.target.setAttribute('style', 'display: none !important')
+//     }
+// };
+
+//     let dislikeBtns = document.querySelectorAll('.dislike-btn')
+//     let likeBtns = document.querySelectorAll('.like-btn')
+
+//    if(like) {
+//         dislikeBtns.forEach(item => item.setAttribute('style', 'display: block'));
+//         likeBtns.forEach(item => item.setAttribute('style', 'display: none'));
+//     } else {
+//         dislikeBtns.forEach(item => item.setAttribute('style', 'display: none'));
+//         likeBtns.forEach(item => item.setAttribute('style', 'display: block'));
+//     };
+
+// if(like) {
+//     let likeBtn = document.querySelectorAll('.like-btn');
+//     let dislikeBtn = document.querySelectorAll('.dislike-btn');
+//     likeBtn.forEach(item => item.setAttribute('style', 'display: none'));
+//     dislikeBtn.forEach(item => item.setAttribute('style', 'display: block'))
+// } else {
+//     let likeBtn = document.querySelectorAll('.like-btn');
+//     let dislikeBtn = document.querySelectorAll('.dislike-btn');
+//     likeBtn.forEach(item => item.setAttribute('style', 'display: block'));
+//     dislikeBtn.forEach(item => item.setAttribute('style', 'display: none'))
+// }
+// console.log(e.target.id.split('-')[1]);
+// if(like) {
+//     dislikeBtn.forEach(item => item.setAttribute('style', 'display: block'));
+//     likeBtns.forEach(item => item.setAttribute('style', 'display: none'));
+// } else {
+//     dislikeBtns.forEach(item => item.setAttribute('style', 'display: none'));
+//     likeBtns.forEach(item => item.setAttribute('style', 'display: block'));
+// };
